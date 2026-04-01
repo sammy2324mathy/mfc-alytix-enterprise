@@ -1,0 +1,1 @@
+// MonteCarloSimulator.tsx placeholder

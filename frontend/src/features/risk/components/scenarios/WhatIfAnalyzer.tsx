@@ -1,0 +1,1 @@
+// WhatIfAnalyzer.tsx placeholder

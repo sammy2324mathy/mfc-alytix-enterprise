@@ -1,0 +1,1 @@
+// ProfitChart.tsx placeholder

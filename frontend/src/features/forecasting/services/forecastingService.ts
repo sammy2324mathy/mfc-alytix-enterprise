@@ -1,0 +1,1 @@
+// forecastingService.ts placeholder

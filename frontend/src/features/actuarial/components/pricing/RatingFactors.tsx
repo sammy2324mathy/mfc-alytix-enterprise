@@ -1,0 +1,1 @@
+// RatingFactors.tsx placeholder

@@ -1,0 +1,1 @@
+// AuditTrail.tsx placeholder

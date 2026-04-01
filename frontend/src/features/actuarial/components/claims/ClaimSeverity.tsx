@@ -1,0 +1,1 @@
+// ClaimSeverity.tsx placeholder

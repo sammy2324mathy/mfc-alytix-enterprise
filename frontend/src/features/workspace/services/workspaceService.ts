@@ -1,0 +1,1 @@
+// workspaceService.ts placeholder

@@ -1,0 +1,1 @@
+// HistoricalSimulator.tsx placeholder

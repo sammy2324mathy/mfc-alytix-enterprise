@@ -1,0 +1,1 @@
+// ProjectDetail.tsx placeholder

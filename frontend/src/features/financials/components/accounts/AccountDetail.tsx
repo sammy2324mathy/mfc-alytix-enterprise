@@ -1,0 +1,1 @@
+// AccountDetail.tsx placeholder

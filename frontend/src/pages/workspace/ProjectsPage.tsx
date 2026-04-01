@@ -1,0 +1,1 @@
+// ProjectsPage.tsx placeholder

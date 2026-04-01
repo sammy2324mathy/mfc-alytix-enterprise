@@ -1,0 +1,30 @@
+_format_version: "3.0"
+
+plugins:
+  - name: rate-limiting
+    service: auth-service
+    config:
+      minute: 50
+      hour: 1000
+      policy: local
+
+  - name: rate-limiting
+    service: ai-service
+    config:
+      minute: 20
+      hour: 200
+      policy: local
+
+  - name: rate-limiting
+    service: data-science-service
+    config:
+      minute: 30
+      hour: 500
+      policy: local
+
+  - name: rate-limiting
+    service: forecasting-service
+    config:
+      minute: 40
+      hour: 800
+      policy: local

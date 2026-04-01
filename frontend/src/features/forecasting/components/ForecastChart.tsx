@@ -1,0 +1,1 @@
+// ForecastChart.tsx placeholder

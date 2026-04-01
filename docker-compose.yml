@@ -1,0 +1,299 @@
+services:
+  # ─────────────── Infrastructure ───────────────
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # ─────────────── Backend Services ───────────────
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: services/auth-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_MINUTES: 60
+      JWT_REFRESH_EXPIRES_MINUTES: 43200
+      SERVICE_NAME: auth-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  accounting-service:
+    build:
+      context: ./backend
+      dockerfile: services/accounting-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SERVICE_NAME: accounting-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  risk-service:
+    build:
+      context: ./backend
+      dockerfile: services/risk-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SERVICE_NAME: risk-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8003:8003"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  actuarial-service:
+    build:
+      context: ./backend
+      dockerfile: services/actuarial-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: actuarial-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    ports:
+      - "8004:8004"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+
+  ai-service:
+    build:
+      context: ./backend
+      dockerfile: services/ai-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/1
+      SERVICE_NAME: ai-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "8006:8006"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  compliance-service:
+    build:
+      context: ./backend
+      dockerfile: services/compliance-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SERVICE_NAME: compliance-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8007:8007"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  workspace-service:
+    build:
+      context: ./backend
+      dockerfile: services/workspace-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SERVICE_NAME: workspace-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8008:8008"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  data-science-service:
+    build:
+      context: ./backend
+      dockerfile: services/data-science-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SERVICE_NAME: data-science-service
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      PYTHONPATH: /app:/app/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8009:8009"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8009/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  excel-engine-service:
+    build:
+      context: ./backend
+      dockerfile: services/excel-engine-service/Dockerfile
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: excel-engine-service
+      PYTHONPATH: /app
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─────────────── API Gateway ───────────────
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: api-gateway/Dockerfile
+    restart: unless-stopped
+    environment:
+      GATEWAY_PORT: 8000
+      AUTH_SERVICE_URL: http://auth-service:8001
+      ACCOUNTING_SERVICE_URL: http://accounting-service:8002
+      RISK_SERVICE_URL: http://risk-service:8003
+      ACTUARIAL_SERVICE_URL: http://actuarial-service:8004
+      AI_SERVICE_URL: http://ai-service:8006
+      COMPLIANCE_SERVICE_URL: http://compliance-service:8007
+      WORKSPACE_SERVICE_URL: http://workspace-service:8008
+      DATA_SCIENCE_SERVICE_URL: http://data-science-service:8009
+      EXCEL_ENGINE_SERVICE_URL: http://excel-engine-service:8010
+      GATEWAY_RATE_LIMIT: 120
+      GATEWAY_RATE_WINDOW: 60
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+    depends_on:
+      - auth-service
+      - accounting-service
+      - risk-service
+      - actuarial-service
+      - ai-service
+      - compliance-service
+      - workspace-service
+      - data-science-service
+      - excel-engine-service
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─────────────── Frontend ───────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:8000
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+    depends_on:
+      - api-gateway
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:

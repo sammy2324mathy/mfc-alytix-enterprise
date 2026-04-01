@@ -1,0 +1,1 @@
+// JournalEntryForm.tsx placeholder

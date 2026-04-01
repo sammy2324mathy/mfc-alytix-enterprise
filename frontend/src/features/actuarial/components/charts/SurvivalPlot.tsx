@@ -1,0 +1,1 @@
+// SurvivalPlot.tsx placeholder

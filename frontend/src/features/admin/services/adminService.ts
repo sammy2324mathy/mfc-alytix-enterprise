@@ -1,0 +1,1 @@
+// adminService.ts placeholder

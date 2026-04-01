@@ -1,0 +1,1 @@
+// ClaimFrequency.tsx placeholder

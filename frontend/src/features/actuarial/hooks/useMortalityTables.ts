@@ -1,0 +1,1 @@
+// useMortalityTables.ts placeholder

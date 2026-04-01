@@ -1,0 +1,1 @@
+// MortalityCurve.tsx placeholder

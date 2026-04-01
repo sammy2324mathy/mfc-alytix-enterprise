@@ -1,0 +1,55 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  test-frontend:
+    name: Frontend Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+          
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Run ESLint
+        working-directory: ./frontend
+        run: npm run lint
+
+  test-backend:
+    name: Backend Pytest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ['auth-service', 'accounting-service', 'actuarial-service', 'risk-service', 'forecasting-service', 'ai-service', 'compliance-service', 'workspace-service', 'data-science-service']
+    
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          echo "Placeholder for pip install"
+          # pip install -r backend/services/${{ matrix.service }}/requirements.txt
+          # pip install pytest
+          
+      - name: Run Tests
+        run: |
+          echo "Placeholder for pytest ${matrix.service}"
+          # python -m pytest backend/services/${{ matrix.service }}/tests

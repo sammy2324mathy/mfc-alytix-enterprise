@@ -1,0 +1,1 @@
+// rootStore.ts placeholder

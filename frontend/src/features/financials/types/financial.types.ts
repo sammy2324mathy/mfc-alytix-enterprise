@@ -1,0 +1,1 @@
+// financial.types.ts placeholder

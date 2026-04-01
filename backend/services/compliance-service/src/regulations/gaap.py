@@ -1,0 +1,1 @@
+# gaap.py placeholder

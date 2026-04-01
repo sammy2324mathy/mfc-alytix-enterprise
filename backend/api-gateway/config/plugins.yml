@@ -1,0 +1,37 @@
+_format_version: "3.0"
+
+plugins:
+  # 🔐 CORS (Frontend access)
+  - name: cors
+    config:
+      origins:
+        - http://localhost:5173
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      headers:
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Authorization
+      credentials: true
+      max_age: 3600
+
+  # 📊 Logging
+  - name: file-log
+    config:
+      path: /tmp/access.log
+
+  # 🔒 Basic rate limiting (fallback)
+  - name: rate-limiting
+    config:
+      minute: 100
+      policy: local
+
+  # 🛡️ Request size limiting
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 10  # MB

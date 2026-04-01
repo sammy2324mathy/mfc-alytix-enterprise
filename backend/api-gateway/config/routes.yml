@@ -1,0 +1,82 @@
+_format_version: "3.0"
+
+services:
+  - name: auth-service
+    url: http://auth-service:8000
+    routes:
+      - name: auth-route
+        paths:
+          - /auth
+        strip_path: true
+
+  - name: accounting-service
+    url: http://accounting-service:8000
+    routes:
+      - name: accounting-route
+        paths:
+          - /accounting
+        strip_path: true
+
+  - name: actuarial-service
+    url: http://actuarial-service:8000
+    routes:
+      - name: actuarial-route
+        paths:
+          - /actuarial
+        strip_path: true
+
+  - name: risk-service
+    url: http://risk-service:8000
+    routes:
+      - name: risk-route
+        paths:
+          - /risk
+        strip_path: true
+
+  - name: forecasting-service
+    url: http://forecasting-service:8000
+    routes:
+      - name: forecasting-route
+        paths:
+          - /forecast
+        strip_path: true
+
+  - name: ai-service
+    url: http://ai-service:8000
+    routes:
+      - name: ai-route
+        paths:
+          - /ai
+        strip_path: true
+
+  - name: data-science-service
+    url: http://data-science-service:8000
+    routes:
+      - name: data-science-route
+        paths:
+          - /data
+        strip_path: true
+
+  - name: compliance-service
+    url: http://compliance-service:8000
+    routes:
+      - name: compliance-route
+        paths:
+          - /compliance
+        strip_path: true
+
+  - name: workspace-service
+    url: http://workspace-service:8000
+    routes:
+      - name: workspace-route
+        paths:
+          - /workspace
+        strip_path: true
+
+  - name: excel-engine-service
+    url: http://excel-engine-service:8010
+    routes:
+      - name: excel-engine-route
+        paths:
+          - /excel
+        strip_path: true

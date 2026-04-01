@@ -1,0 +1,1 @@
+// useCollaboration.ts placeholder

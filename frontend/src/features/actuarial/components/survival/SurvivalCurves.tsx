@@ -1,0 +1,1 @@
+// SurvivalCurves.tsx placeholder

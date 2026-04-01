@@ -1,0 +1,1 @@
+// forecasting.types.ts placeholder

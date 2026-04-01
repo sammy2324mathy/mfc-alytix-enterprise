@@ -1,0 +1,1 @@
+// ScenarioSimulator.tsx placeholder

@@ -1,0 +1,1 @@
+// TransactionDetail.tsx placeholder

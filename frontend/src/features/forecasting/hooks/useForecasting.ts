@@ -1,0 +1,1 @@
+// useForecasting.ts placeholder

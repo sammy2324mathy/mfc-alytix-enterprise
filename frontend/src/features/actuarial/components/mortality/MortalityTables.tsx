@@ -1,0 +1,1 @@
+// MortalityTables.tsx placeholder

@@ -1,0 +1,1 @@
+// useAIAssistant.ts placeholder
