@@ -1,7 +1,8 @@
 import React from 'react';
 import { MetricCard } from '../../components/data-display/MetricCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
-import { FileBarChart, TrendingDown, Clock, DollarSign } from 'lucide-react';
+import { FileBarChart, TrendingDown, Clock, DollarSign, BrainCircuit, Zap } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const claimsData = [
   { month: 'Jul', frequency: 412, severity: 8200 },
@@ -14,9 +15,31 @@ const claimsData = [
 
 export const DSClaimsPage: React.FC = () => (
   <div className="space-y-6">
-    <div>
-      <h2 className="text-xl font-bold text-slate-900">Claims Analysis & Optimization</h2>
-      <p className="text-sm text-slate-500">Analyze claims data to identify cost drivers, predict severity and frequency, and optimize processing efficiency.</p>
+    <div className="flex justify-between items-center">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900">Claims Analysis & Optimization</h2>
+        <p className="text-sm text-slate-500">Analyze claims data to identify cost drivers, predict severity and frequency, and optimize processing efficiency.</p>
+      </div>
+      <div className="flex gap-3">
+        <button 
+          onClick={() => toast.promise(new Promise(r => setTimeout(r, 1200)), {
+            loading: 'Analyzing historical severity drivers...',
+            success: 'Severity coefficients updated for GBRT v2.4',
+            error: 'Failed to update severity model.',
+          })}
+          className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2"
+        >
+          <BrainCircuit className="w-4 h-4" />
+          Update Model
+        </button>
+        <button 
+          onClick={() => toast.success('Claims triage engine optimized. Adjusted auto-approval thresholds.')}
+          className="px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 transition-all shadow-premium flex items-center gap-2"
+        >
+          <Zap className="w-4 h-4" />
+          Optimize Triage
+        </button>
+      </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <MetricCard title="Avg Claim Amount" value="$8,720" trend="+4.2% QoQ" trendDirection="down" icon={<DollarSign className="w-5 h-5" />} />

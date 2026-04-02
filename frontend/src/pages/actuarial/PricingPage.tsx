@@ -6,7 +6,8 @@ import {
 } from 'recharts';
 import { MetricCard } from '../../components/data-display/MetricCard';
 import { actuarialApi } from '../../services/actuarialApi';
-import { Calculator, TrendingUp, Layers, CheckCircle, FileSignature, Send, Lock, RotateCcw, Save, Loader2 } from 'lucide-react';
+import { Calculator, TrendingUp, Layers, CheckCircle, FileSignature, Send, Lock, RotateCcw, Save, Loader2, Sparkles } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const premiumComponents = [
   { product: 'Term Life', risk: 45, expenses: 15, margin: 10 },
@@ -63,11 +64,17 @@ export const PricingPage: React.FC = () => {
   const { mutate: handleSaveProposal, isPending: isSaving } = useMutation({
     mutationFn: (data: { product: string; proposedDelta: number; justification: string; status: string }) => 
       actuarialApi.createRateProposal({ ...data, analyst: username }),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['pricing-proposals'] });
       setIsDrafting(false);
       setDraftDelta(0);
       setDraftJustification('');
+      
+      const isPending = variables.status === 'Pending Review';
+      toast.success(isPending ? 'Rate Proposal Broadcasted to Chief Actuary' : 'Pricing Logic Saved to Drafts', {
+        icon: isPending ? <Send className="w-4 h-4 text-indigo-400" /> : <Save className="w-4 h-4 text-slate-400" />,
+        style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+      });
     }
   });
 
@@ -77,6 +84,14 @@ export const PricingPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['pricing-proposals'] });
       if (updated.status === 'Committed to Engine') {
         setRateHistory(prev => [...prev, { quarter: 'Latest', rateChange: updated.proposedDelta }]);
+        toast.success(`Operationalizing: ${updated.product} rates updated by ${updated.proposedDelta}%`, {
+           icon: <Sparkles className="w-4 h-4 text-emerald-400" />,
+           style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+        });
+      } else if (updated.status === 'Rejected') {
+        toast.error('Pricing Proposal Rejected', {
+          style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+        });
       }
     }
   });

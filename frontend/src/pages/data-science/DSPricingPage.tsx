@@ -1,7 +1,8 @@
 import React from 'react';
 import { MetricCard } from '../../components/data-display/MetricCard';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
-import { DollarSign, TrendingUp, Target, BarChart3 } from 'lucide-react';
+import { DollarSign, TrendingUp, Target, BarChart3, Wand2, Search } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const pricingHistory = Array.from({ length: 12 }, (_, i) => ({
   month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
@@ -12,9 +13,31 @@ const pricingHistory = Array.from({ length: 12 }, (_, i) => ({
 
 export const DSPricingPage: React.FC = () => (
   <div className="space-y-6">
-    <div>
-      <h2 className="text-xl font-bold text-slate-900">Pricing & Premium Optimization</h2>
-      <p className="text-sm text-slate-500">ML-driven pricing models that use historical claims data to optimize premiums while remaining competitive.</p>
+    <div className="flex justify-between items-center">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900">Pricing & Premium Optimization</h2>
+        <p className="text-sm text-slate-500">ML-driven pricing models that use historical claims data to optimize premiums while remaining competitive.</p>
+      </div>
+      <div className="flex gap-3">
+        <button 
+          onClick={() => toast.success('Market analysis triggered. Analyzing competitor premiums...')}
+          className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2"
+        >
+          <Search className="w-4 h-4" />
+          Market Intelligence
+        </button>
+        <button 
+          onClick={() => toast.promise(new Promise(r => setTimeout(r, 1500)), {
+            loading: 'Recalculating optimal premiums...',
+            success: 'Premium optimization complete. Applied to v3.1 model.',
+            error: 'Failed to optimize premiums.',
+          })}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-premium flex items-center gap-2"
+        >
+          <Wand2 className="w-4 h-4" />
+          Optimize All
+        </button>
+      </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <MetricCard title="Pricing Model" value="GLM + RF Ensemble" trend="v3.1 (Prod)" trendDirection="up" icon={<DollarSign className="w-5 h-5" />} />

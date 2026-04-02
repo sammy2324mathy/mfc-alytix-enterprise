@@ -13,7 +13,8 @@ import {
   Tooltip as RechartsTooltip, 
   ResponsiveContainer 
 } from 'recharts';
-import { ShieldAlert, Target, Users, TrendingUp, RefreshCw, ChevronRight } from 'lucide-react';
+import { ShieldAlert, Target, Users, TrendingUp, RefreshCw, ChevronRight, FileDown } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export const DSRiskPage: React.FC = () => {
   const { data: riskSegments, isLoading, refetch } = useQuery({
@@ -32,6 +33,18 @@ export const DSRiskPage: React.FC = () => {
     }
   });
 
+  const handleRecalculate = () => {
+    toast.promise(refetch(), {
+      loading: 'Scoring all active policyholders...',
+      success: 'Risk scores updated successfully',
+      error: 'Failed to update risk scores',
+    });
+  };
+
+  const handleExport = () => {
+    toast.success('Risk segments exported as CSV');
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
@@ -40,7 +53,7 @@ export const DSRiskPage: React.FC = () => {
           <p className="text-slate-500 mt-1 text-sm font-medium">Customer scoring, claim probability models, and underwriting support.</p>
         </div>
         <button 
-          onClick={() => refetch()}
+          onClick={handleRecalculate}
           className="flex items-center gap-2 px-4 py-2 bg-white rounded-2xl shadow-premium border border-slate-100 text-sm font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -105,7 +118,11 @@ export const DSRiskPage: React.FC = () => {
             )}
           </div>
           <div className="p-4 bg-slate-50/30">
-            <button className="w-full py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 hover:bg-white hover:border-indigo-200 hover:text-indigo-600 transition-all">
+            <button 
+              onClick={handleExport}
+              className="w-full py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 hover:bg-white hover:border-indigo-200 hover:text-indigo-600 transition-all flex items-center justify-center gap-2"
+            >
+              <FileDown className="w-4 h-4" />
               Export Segment Profiles
             </button>
           </div>

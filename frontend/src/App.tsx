@@ -56,11 +56,26 @@ export const ProtectedRoute = ({ children, allowedRoles }: { children: React.Rea
 
 const queryClient = new QueryClient();
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <SecurityProvider>
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              className: 'font-display font-bold text-xs',
+              style: {
+                borderRadius: '16px',
+                background: '#0f172a',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.1)',
+                padding: '12px 20px',
+              }
+            }}
+          />
           <BrowserRouter>
             <NetworkStatus />
             <RouteLoader>

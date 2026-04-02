@@ -1,9 +1,10 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Package, ShieldCheck, Cpu, HardDrive, RefreshCw, ExternalLink, Activity } from 'lucide-react';
+import { Package, ShieldCheck, Cpu, HardDrive, RefreshCw, ExternalLink, Activity, Target } from 'lucide-react';
 import { dataScienceApi } from '../../services/dataScienceApi';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { MetricCard } from '../../components/data-display/MetricCard';
+import { toast } from 'react-hot-toast';
 
 export const ModelsPage: React.FC = () => {
   const { data: models, isLoading, refetch } = useQuery({
@@ -77,7 +78,10 @@ export const ModelsPage: React.FC = () => {
               </div>
               <div className="mt-8 pt-6 border-t border-slate-50 flex justify-between items-center">
                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">Last Deployment: {model.lastUpdated}</span>
-                 <button className="text-indigo-600 hover:text-indigo-700 font-bold text-xs flex items-center gap-1.5 transition-all group-hover:gap-2">
+                 <button 
+                  onClick={() => toast.success(`Opening real-time monitoring for ${model.name}`)}
+                  className="text-indigo-600 hover:text-indigo-700 font-bold text-xs flex items-center gap-1.5 transition-all group-hover:gap-2"
+                 >
                     Monitoring Panel <ExternalLink className="w-3.5 h-3.5" />
                  </button>
               </div>

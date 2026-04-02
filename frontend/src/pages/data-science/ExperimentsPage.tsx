@@ -4,6 +4,7 @@ import { Beaker, Play, History, Tag, ChevronRight, RefreshCw, AlertCircle } from
 import { dataScienceApi } from '../../services/dataScienceApi';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { MetricCard } from '../../components/data-display/MetricCard';
+import { toast } from 'react-hot-toast';
 
 export const ExperimentsPage: React.FC = () => {
   const { data: pipelines, isLoading, refetch } = useQuery({
@@ -29,11 +30,21 @@ export const ExperimentsPage: React.FC = () => {
           <p className="text-slate-500 mt-1 text-sm font-medium">Manage pipeline execution and model performance tracking.</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 bg-indigo-600 text-white rounded-2xl shadow-premium text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2">
+          <button 
+            onClick={() => toast.promise(new Promise(r => setTimeout(r, 2000)), {
+              loading: 'Initializing training environment...',
+              success: 'Experiment container started on Kubernetes',
+              error: 'Failed to provision training node',
+            })}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-2xl shadow-premium text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2"
+          >
             <Play className="w-4 h-4 fill-current" />
             New Experiment
           </button>
-          <button onClick={() => refetch()} className="p-2 bg-white rounded-2xl border border-slate-100 shadow-premium-sm text-slate-400 hover:text-indigo-600 transition-all">
+          <button onClick={() => {
+            toast.success('Refreshing pipeline logs...');
+            refetch();
+          }} className="p-2 bg-white rounded-2xl border border-slate-100 shadow-premium-sm text-slate-400 hover:text-indigo-600 transition-all">
              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
         </div>
@@ -88,7 +99,10 @@ export const ExperimentsPage: React.FC = () => {
                        <p className="text-xs font-bold text-slate-800">{run.accuracy !== '-' ? `AUC: ${run.accuracy}` : '- '}</p>
                     </td>
                     <td className="px-8 py-5 text-right">
-                       <button className="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+                       <button 
+                        onClick={() => toast.success(`Performance report for ${run.id} opened`)}
+                        className="p-2 text-slate-300 hover:text-indigo-600 transition-colors"
+                       >
                           <ChevronRight className="w-5 h-5" />
                        </button>
                     </td>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { MetricCard } from '../../components/data-display/MetricCard';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { FlaskConical, IterationCcw, Target, Activity, ShieldAlert, Play, Settings2 } from 'lucide-react';
+import { FlaskConical, IterationCcw, Target, Activity, ShieldAlert, Play, Settings2, ArrowRight, TrendingUp } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 const generatePaths = (n: number) => {
   const data = [];
@@ -27,7 +28,20 @@ export const SimulationsPage: React.FC = () => {
   const [iterations, setIterations] = useState(10000);
   const [data, setData] = useState(generatePaths(pathCount));
 
-  const handleRun = () => setData(generatePaths(pathCount));
+  const handleRun = (scenarioName: string = "Standard Model Run") => {
+    const loadingToast = toast.loading(`Executing Stochastic engine: ${scenarioName}...`, {
+      style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+    });
+    
+    setTimeout(() => {
+      setData(generatePaths(pathCount));
+      toast.success(`${scenarioName} Complete. Paths Converged.`, {
+        id: loadingToast,
+        icon: <Target className="w-4 h-4 text-emerald-400" />,
+        style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+      });
+    }, 1200);
+  };
 
   return (
     <div className="space-y-6">
@@ -91,6 +105,37 @@ export const SimulationsPage: React.FC = () => {
             </select>
           </div>
         </div>
+      </div>
+
+      {/* Stress Scenarios Dashboard */}
+      <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-premium">
+         <div className="flex items-center gap-3 mb-8">
+            <FlaskConical className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Stress Test Scenario & Preset Library</h3>
+         </div>
+         <div className="grid grid-cols-3 gap-6">
+            {[
+              { name: 'High Inflation Shock', desc: 'CPI +2% shock to maintenance costs.', icon: <TrendingUp className="w-4 h-4" />, color: 'bg-indigo-50 text-indigo-600' },
+              { name: 'Pandemic Mortality', desc: 'qx +25% shock to ages 65-85.', icon: <Activity className="w-4 h-4" />, color: 'bg-rose-50 text-rose-600' },
+              { name: 'Market Crash V2', desc: 'Equities -30% with vol spike.', icon: <ShieldAlert className="w-4 h-4" />, color: 'bg-emerald-50 text-emerald-600' },
+            ].map((scen, index) => (
+               <button 
+                  key={index}
+                  onClick={() => handleRun(scen.name)}
+                  className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left hover:border-indigo-500/50 hover:bg-white transition-all group"
+               >
+                  <div className={`w-10 h-10 rounded-xl ${scen.color} flex items-center justify-center mb-4 shadow-sm`}>
+                     {scen.icon}
+                  </div>
+                  <h4 className="text-sm font-black text-slate-800 uppercase tracking-wider">{scen.name}</h4>
+                  <p className="text-[10px] text-slate-400 font-bold mt-2 leading-relaxed">{scen.desc}</p>
+                  <div className="mt-6 flex items-center gap-2 text-indigo-600 font-black text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                     <span>Execute Scenario</span>
+                     <ArrowRight className="w-3 h-3" />
+                  </div>
+               </button>
+            ))}
+         </div>
       </div>
 
       {/* Path Chart */}

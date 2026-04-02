@@ -1,156 +1,163 @@
 import React from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import {
-  Activity,
-  BarChart3,
-  Calculator,
   ChevronRight,
-  Database,
-  FileSpreadsheet,
-  FlaskConical,
-  Heart,
-  LineChart,
-  Lock,
-  PieChart,
   Shield,
   TrendingUp,
+  Settings2,
+  Search,
+  Layers,
+  Cpu,
+  Wifi,
+  History,
+  AlertCircle
 } from 'lucide-react';
-
-type NavAccess = 'all' | 'chief_only';
-
-interface ActuarialNavItem {
-  name: string;
-  href: string;
-  icon: React.ReactNode;
-  description: string;
-  access: NavAccess;
-}
-
-interface ActuarialNavGroup {
-  id: string;
-  title: string;
-  items: ActuarialNavItem[];
-}
-
-const ACTUARIAL_NAV: ActuarialNavGroup[] = [
-  {
-    id: 'risk-analysis',
-    title: 'Risk Analysis',
-    items: [
-      { name: 'Mortality Tables', href: '/actuarial/mortality', icon: <Heart className="w-4 h-4" />, description: 'Life tables, qx curves, and experience studies', access: 'all' },
-      { name: 'Survival Models', href: '/actuarial/survival', icon: <Activity className="w-4 h-4" />, description: 'Kaplan-Meier, Cox PH, and Weibull models', access: 'all' },
-    ],
-  },
-  {
-    id: 'pricing-reserves',
-    title: 'Pricing & Reserves',
-    items: [
-      { name: 'Product Pricing', href: '/actuarial/pricing', icon: <Calculator className="w-4 h-4" />, description: 'Rate proposals, premium computation, CUV', access: 'all' },
-      { name: 'Claims Reserving', href: '/actuarial/claims', icon: <Shield className="w-4 h-4" />, description: 'IBNR, loss triangles, Chain Ladder', access: 'all' },
-    ],
-  },
-  {
-    id: 'modeling',
-    title: 'Modeling & Projections',
-    items: [
-      { name: 'Cash Flow Modeler', href: '/actuarial/modeler', icon: <FileSpreadsheet className="w-4 h-4" />, description: 'Policy values, liability projections, scenario testing', access: 'all' },
-      { name: 'Simulation Lab', href: '/actuarial/simulations', icon: <FlaskConical className="w-4 h-4" />, description: 'Monte Carlo engine and stochastic forecasting', access: 'all' },
-    ],
-  },
-  {
-    id: 'data-reporting',
-    title: 'Data & Reporting',
-    items: [
-      { name: 'Data Explorer', href: '/actuarial/data', icon: <Database className="w-4 h-4" />, description: 'Policyholder, claims, and exposure datasets', access: 'all' },
-      { name: 'Actuarial Dashboards', href: '/actuarial/dashboards', icon: <PieChart className="w-4 h-4" />, description: 'KPIs, profitability, loss ratios', access: 'all' },
-    ],
-  },
-  {
-    id: 'governance',
-    title: 'Governance',
-    items: [
-      { name: 'Assumptions Register', href: '/actuarial/assumptions', icon: <BarChart3 className="w-4 h-4" />, description: 'Rate basis, best-estimate assumptions, sign-off', access: 'chief_only' },
-    ],
-  },
-];
 
 export const ActuarialLayout: React.FC = () => {
   const location = useLocation();
-  const roles = useAuthStore((s) => s.user?.roles);
-  const isAdmin = roles?.includes('admin');
-  const isChief = roles?.includes('chief_actuary') || isAdmin;
+  const user = useAuthStore((s) => s.user);
+  const isChief = user?.roles.includes('chief_actuary') || user?.roles.includes('admin');
+
+  // Breadcrumb Logic
+  const pathSegments = location.pathname.split('/').filter(Boolean);
+  const activeLabel = pathSegments[pathSegments.length - 1] || 'Dashboard';
+  const displayLabel = activeLabel.charAt(0).toUpperCase() + activeLabel.slice(1).replace('-', ' ');
+
+  const isWorkspace = location.pathname === '/actuarial/workspace';
 
   return (
-    <div className="flex h-full gap-0 -m-6 md:-m-8">
-      {/* Actuarial Sidebar */}
-      <aside className="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-y-auto">
-        <div className="p-5 border-b border-slate-100">
-          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Actuarial Science</h2>
-          <p className="text-[11px] text-slate-400 mt-0.5">
-            {isChief ? 'Chief Actuary — governance authority' : 'Actuarial Analyst — modeling & analysis'}
-          </p>
-        </div>
-
-        <nav className="flex-1 py-3">
-          {ACTUARIAL_NAV.map((group) => {
-            const visible = group.items.filter(item => item.access === 'all' || isChief);
-            if (!visible.length) return null;
-
-            return (
-              <div key={group.id} className="mb-1">
-                <div className="px-5 pt-4 pb-1.5">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{group.title}</h3>
-                </div>
-                <ul className="space-y-0.5 px-2">
-                  {visible.map((item) => {
-                    const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
-                    return (
-                      <li key={item.href}>
-                        <NavLink
-                          to={item.href}
-                          title={item.description}
-                          className={`
-                            flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group
-                            ${isActive
-                              ? 'bg-indigo-50 text-indigo-800 shadow-sm border border-indigo-100'
-                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
-                            }
-                          `}
-                        >
-                          <span className={`shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-500'}`}>
-                            {item.icon}
-                          </span>
-                          <span className="flex-1 truncate">{item.name}</span>
-                          {item.access === 'chief_only' && <Lock className="w-3 h-3 text-amber-500 shrink-0" />}
-                          {isActive && <ChevronRight className="w-3.5 h-3.5 text-indigo-500 shrink-0" />}
-                        </NavLink>
-                      </li>
-                    );
-                  })}
-                </ul>
+    <div className="flex flex-col h-full bg-slate-50/80 -m-6 md:-m-8 overflow-hidden font-sans">
+      
+      {/* 1. PROFESSIONAL COMMAND BAR (Sub-Header) - Hidden in Workspace Mode for Immersive Modeling */}
+      {!isWorkspace && (
+        <header className="h-[72px] bg-white/90 backdrop-blur-md border-b border-slate-200/60 px-8 flex items-center justify-between shrink-0 relative z-30 shadow-sm transition-all duration-500 hover:shadow-md">
+          <div className="flex items-center gap-10">
+              {/* Dept Branding & Breadcrumb Node */}
+              <div className="flex items-center gap-6 group cursor-pointer">
+                 <div className="w-11 h-11 rounded-[20px] bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-100 group-hover:rotate-6 transition-transform">
+                    <Cpu className="w-5 h-5 text-white animate-pulse" />
+                 </div>
+                 <div className="flex flex-col">
+                    <div className="flex items-center gap-3">
+                       <h1 className="text-sm font-black text-slate-900 tracking-tight uppercase italic leading-none">Actuarial Intelligence Hub</h1>
+                       <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">{displayLabel}</span>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-3 mt-1.5">
+                       <div className="flex items-center gap-1.5 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Compute Node: 3122-A / ACTIVE</p>
+                       </div>
+                    </div>
+                 </div>
               </div>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <div className="text-[10px] text-slate-400 space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-              <span>Valuation date: <span className="font-semibold text-slate-500">31 Dec 2025</span></span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>Basis: <span className="font-semibold text-slate-500">Best Estimate</span></span>
-            </div>
           </div>
-        </div>
-      </aside>
 
-      <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50/30">
-        <Outlet />
-      </div>
+          <div className="flex items-center gap-6">
+              {/* Global Search Tool */}
+              <div className="relative group/search hidden xl:block">
+                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within/search:text-indigo-500 transition-colors" />
+                 <input 
+                    type="text" 
+                    placeholder="Universal Model Lookup (KDN/SHA)..."
+                    className="bg-slate-50 border border-slate-200/50 rounded-xl pl-9 pr-4 py-2.5 text-[10px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white focus:border-indigo-200 transition-all w-64 group-focus-within/search:w-80 shadow-inner"
+                 />
+              </div>
+
+              <div className="h-8 w-[1px] bg-slate-200/60" />
+
+              <div className="flex items-center gap-4">
+                 <div className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-50 border border-slate-200/30 rounded-2xl shadow-inner group/queue cursor-help">
+                    <div className="flex gap-1 items-end h-3">
+                       {[1,2,3,4].map(i => <div key={i} className={`w-1 rounded-full transition-all ${i <= 2 ? 'bg-indigo-400 h-3 animate-bounce' : 'bg-slate-200 h-1.5'}`} style={{ animationDelay: `${i * 150}ms` }} />)}
+                    </div>
+                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Queue: 2 Jobs</span>
+                 </div>
+                 
+                 {isChief && (
+                   <div className="flex items-center gap-3 px-5 py-2.5 bg-amber-50 border border-amber-100/50 rounded-2xl border-dashed shadow-sm">
+                      <Shield className="w-3.5 h-3.5 text-amber-600" />
+                      <div className="flex flex-col">
+                         <span className="text-[8px] font-black text-amber-500/60 uppercase tracking-widest leading-none mb-1">Authorization Node</span>
+                         <span className="text-[9px] font-black text-amber-700 uppercase tracking-widest leading-none italic">Chief Sign-off Actuary</span>
+                      </div>
+                   </div>
+                 )}
+                 
+                 <button className="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/10 transition-all cursor-pointer relative group/settings">
+                    <Settings2 className="w-4.5 h-4.5 group-hover/settings:rotate-90 transition-transform duration-500" />
+                    <div className="absolute top-0 right-0 w-3 h-3 bg-rose-500 border-2 border-white rounded-full translate-x-1/4 -translate-y-1/4 shadow-sm" />
+                 </button>
+              </div>
+          </div>
+        </header>
+      )}
+
+      {/* 2. MAIN DATA VIEWPORT */}
+      <main className={`flex-1 overflow-y-auto relative bg-slate-50/40 ${isWorkspace ? 'p-0' : 'p-8'}`}>
+         
+         {/* Contextual System Alerts (Only visible in Standard Hub mode) */}
+         {!isWorkspace && (
+           <div className="mb-8 flex flex-col md:flex-row gap-4">
+              <div className="flex-1 bg-gradient-to-r from-indigo-900 to-indigo-800 rounded-3xl p-5 flex items-center justify-between text-white shadow-2xl shadow-indigo-200 border border-indigo-700/50 group">
+                 <div className="flex items-center gap-6">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md group-hover:rotate-6 transition-transform">
+                       <AlertCircle className="w-6 h-6 text-indigo-100" />
+                    </div>
+                    <div>
+                       <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-300/80 mb-1">Global Actuarial Alert</p>
+                       <h3 className="text-sm font-bold tracking-wide italic">Mortality Experience Study for Q1 2025 has been finalized and requires Chief sign-off.</h3>
+                    </div>
+                 </div>
+                 <button className="px-6 py-2 bg-indigo-600/50 hover:bg-indigo-600 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-indigo-500/50 backdrop-blur-md transition-all">Sign-off Now</button>
+              </div>
+
+              <div className="w-full md:w-80 bg-white rounded-3xl p-5 flex items-center gap-6 border border-slate-200 shadow-xl shadow-slate-100 group">
+                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <TrendingUp className="w-6 h-6 text-emerald-500" />
+                 </div>
+                 <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-1">System Health</p>
+                    <p className="text-[11px] font-black text-slate-800 uppercase flex items-center gap-2">
+                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                       L-3 Clusters Ready
+                    </p>
+                    <div className="mt-2 h-1 bg-slate-100 rounded-full overflow-hidden">
+                       <div className="h-full bg-indigo-500 w-[78%]" />
+                    </div>
+                 </div>
+              </div>
+           </div>
+         )}
+
+         {/* Content Container */}
+         <div className={`${isWorkspace ? 'max-w-none w-full h-full' : 'max-w-[1680px] mx-auto animate-fade-in'}`}>
+            <Outlet />
+         </div>
+      </main>
+
+      {/* Modern Status Footer (Only in Hub mode) */}
+      {!isWorkspace && (
+        <footer className="h-10 bg-slate-100/50 border-t border-slate-200/60 px-8 flex items-center justify-between shrink-0 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+           <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                 <Wifi className="w-3 h-3 text-emerald-500" />
+                 <span>Socket Node: High Capacity</span>
+              </div>
+              <div className="flex items-center gap-2">
+                 <History className="w-3 h-3" />
+                 <span>Last Snapshot: 2:00 AM ISO</span>
+              </div>
+           </div>
+           <div className="flex items-center gap-6">
+              <span className="flex items-center gap-2"><Layers className="w-3 h-3" /> Grid Mesh: Active</span>
+              <span className="text-indigo-500 italic">Antigravity IADE Platform</span>
+           </div>
+        </footer>
+      )}
     </div>
   );
 };

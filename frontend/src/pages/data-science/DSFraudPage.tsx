@@ -5,6 +5,8 @@ import { dataScienceApi } from '../../services/dataScienceApi';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { MetricCard } from '../../components/data-display/MetricCard';
 
+import { toast } from 'react-hot-toast';
+
 export const DSFraudPage: React.FC = () => {
   const { data: flaggedClaims, isLoading, refetch } = useQuery({
     queryKey: ['ds-flagged-claims'],
@@ -18,14 +20,24 @@ export const DSFraudPage: React.FC = () => {
   const { mutate: updateStatus } = useMutation({
     mutationFn: ({ claimId, status }: { claimId: string, status: string }) => 
       dataScienceApi.updateReviewStatus(claimId, status),
-    onSuccess: () => {
+    onSuccess: (_, { status }) => {
+      toast.success(`Claim status updated to ${status}`);
       refetch();
+    },
+    onError: () => {
+      toast.error('Failed to update claim status');
     }
   });
 
   const { mutate: scanForAnomalies, isPending: isScanning } = useMutation({
     mutationFn: dataScienceApi.scanForAnomalies,
-    onSuccess: () => refetch()
+    onSuccess: () => {
+      toast.success('Fraud engine scan complete. High-risk queue updated.');
+      refetch();
+    },
+    onError: () => {
+      toast.error('Fraud engine scan failed');
+    }
   });
 
   const handleAction = (claimId: string, status: string) => {

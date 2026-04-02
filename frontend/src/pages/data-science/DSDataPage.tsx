@@ -1,9 +1,10 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Database, RefreshCw, CheckCircle, AlertTriangle, Play, Settings, ChevronRight } from 'lucide-react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Database, RefreshCw, CheckCircle, AlertTriangle, Play, Settings, ChevronRight, PlayCircle } from 'lucide-react';
 import { dataScienceApi } from '../../services/dataScienceApi';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { MetricCard } from '../../components/data-display/MetricCard';
+import { toast } from 'react-hot-toast';
 
 export const DSDataPage: React.FC = () => {
   const { data: pipelines, isLoading, refetch } = useQuery({
@@ -23,6 +24,28 @@ export const DSDataPage: React.FC = () => {
     }
   });
 
+  const { mutate: runPipeline, isPending: isRunning } = useMutation({
+    mutationFn: (id: string) => dataScienceApi.runPipeline(id),
+    onSuccess: (_, id) => {
+      toast.success(`Pipeline ${id} triggered successfully`);
+      refetch();
+    },
+    onError: () => {
+      toast.error('Failed to trigger pipeline execution');
+    }
+  });
+
+  const handleRunAll = () => {
+    toast.promise(
+      Promise.all(pipelines?.map((p: any) => dataScienceApi.runPipeline(p.id)) || []),
+      {
+        loading: 'Orchestrating all pipelines...',
+        success: 'All pipelines triggered successfully',
+        error: 'One or more pipelines failed to start',
+      }
+    );
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
@@ -31,12 +54,15 @@ export const DSDataPage: React.FC = () => {
           <p className="text-slate-500 mt-1 text-sm font-medium">Ingestion, ETL pipelines, and feature store orchestration.</p>
         </div>
         <div className="flex gap-3">
-           <button className="px-4 py-2 bg-indigo-600 text-white rounded-2xl shadow-premium text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2">
+           <button 
+             onClick={handleRunAll}
+             className="px-4 py-2 bg-indigo-600 text-white rounded-2xl shadow-premium text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2"
+           >
             <Play className="w-4 h-4 fill-current" />
             Run All ETL
           </button>
           <button onClick={() => refetch()} className="p-2 bg-white rounded-2xl border border-slate-100 shadow-premium-sm text-slate-400 hover:text-indigo-600 transition-all">
-             <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+             <RefreshCw className={`w-5 h-5 ${isLoading || isRunning ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
@@ -89,9 +115,18 @@ export const DSDataPage: React.FC = () => {
                        </span>
                     </td>
                     <td className="px-8 py-5 text-right">
-                       <button className="p-2 text-slate-300 hover:text-indigo-600 transition-colors">
-                          <Settings className="w-4 h-4" />
-                       </button>
+                       <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => runPipeline(p.id)}
+                            className="p-2 text-slate-300 hover:text-indigo-600 transition-colors" 
+                            title="Run Pipeline"
+                          >
+                             <PlayCircle className="w-5 h-5" />
+                          </button>
+                          <button className="p-2 text-slate-300 hover:text-slate-600 transition-colors">
+                             <Settings className="w-4 h-4" />
+                          </button>
+                       </div>
                     </td>
                   </tr>
                 ))

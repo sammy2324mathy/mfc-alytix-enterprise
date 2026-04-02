@@ -14,10 +14,14 @@ import {
   Calculator,
   Target,
   FlaskConical,
-  Scale
+  Scale,
+  Sparkles,
+  AlertTriangle
 } from 'lucide-react';
 import { actuarialApi } from '../../services/actuarialApi';
+import { useAuthStore } from '../../store/authStore';
 import { SovereignVerifiedBadge } from '../../components/common/SovereignVerifiedBadge';
+import { toast } from 'react-hot-toast';
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -34,7 +38,15 @@ import {
   Cell
 } from 'recharts';
 
+const ACTUARIAL_ROLES = {
+  CHIEF: 'chief_actuary',
+  ANALYST: 'actuarial_analyst',
+  SYSTEM: 'admin'
+};
+
 export const ALMPage: React.FC = () => {
+    const { user } = useAuthStore();
+    const isChief = user?.roles.includes(ACTUARIAL_ROLES.CHIEF) || user?.roles.includes(ACTUARIAL_ROLES.SYSTEM);
     const [shockBps, setShockBps] = useState(100);
 
     const assetProjection = useMutation({
@@ -44,7 +56,21 @@ export const ALMPage: React.FC = () => {
 
     const sensitivity = useMutation({
         mutationFn: (vars: { cashflows: any[]; rate: number; shock: number }) => 
-            actuarialApi.getRateSensitivity({ liability_cashflows: vars.cashflows, base_rate: vars.rate, shock_bps: vars.shock })
+            actuarialApi.getRateSensitivity({ liability_cashflows: vars.cashflows, base_rate: vars.rate, shock_bps: vars.shock }),
+        onSuccess: (data) => {
+            const impactM = Math.abs(data.impact / 1000000);
+            if (data.impact < 0) {
+               toast(`Capital Shock: $${impactM.toFixed(1)}M loss in Sovereign Net Worth`, {
+                  icon: <AlertTriangle className="w-5 h-5 text-rose-500" />,
+                  style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+               });
+            } else {
+               toast(`Efficiency Gain: $${impactM.toFixed(1)}M surplus projected`, {
+                  icon: <Sparkles className="w-5 h-5 text-emerald-400" />,
+                  style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+               });
+            }
+        }
     });
 
     // Mock data for initial render
@@ -60,9 +86,12 @@ export const ALMPage: React.FC = () => {
         <div className="space-y-8 animate-in zoom-in duration-700">
             <header className="flex justify-between items-end mb-8">
                 <div>
-                    <div className="flex items-center gap-4">
+                     <div className="flex items-center gap-4">
                         <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">ALM & Capital Strategy</h1>
                         <SovereignVerifiedBadge signature="ALM_ACTUARIAL_V4_SECURED" />
+                        <div className={`px-4 py-1.5 rounded-2xl text-[9px] font-black uppercase tracking-widest border ${isChief ? 'bg-amber-500/10 border-amber-500/20 text-amber-600' : 'bg-slate-100 border-slate-200 text-slate-400'}`}>
+                           {isChief ? 'Sign-off Authority: Chief Actuary' : 'Status: Analyst Modeling'}
+                        </div>
                     </div>
                     <p className="text-slate-500 font-bold mt-1 uppercase tracking-[0.4em] text-[10px]">Asset-Liability Matching Node • Liquidity Ladder v4.2</p>
                 </div>

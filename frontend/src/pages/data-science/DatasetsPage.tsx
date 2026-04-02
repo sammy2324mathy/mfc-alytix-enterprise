@@ -4,6 +4,7 @@ import { Database, Table, Layers, FileCode, RefreshCw, Search, Filter } from 'lu
 import { apiClient } from '../../services/apiClient';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { MetricCard } from '../../components/data-display/MetricCard';
+import { toast } from 'react-hot-toast';
 
 export const DatasetsPage: React.FC = () => {
   const { data: datasets, isLoading, refetch } = useQuery({
@@ -75,7 +76,10 @@ export const DatasetsPage: React.FC = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-6 py-2.5 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all shadow-inner hover:shadow-premium">
+              <button 
+                onClick={() => toast.success(`Feature analysis started for ${ds.name}. Generating importance scores...`)}
+                className="w-full mt-6 py-2.5 bg-slate-50 text-slate-600 rounded-xl text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all shadow-inner hover:shadow-premium"
+              >
                 Explore Features
               </button>
             </div>

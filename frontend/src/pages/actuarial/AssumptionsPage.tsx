@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { MetricCard } from '../../components/data-display/MetricCard';
-import { BarChart3, CheckCircle, Lock, Send, XCircle, FileSignature, Settings2, Clock } from 'lucide-react';
+import { BarChart3, CheckCircle, Lock, Send, XCircle, FileSignature, Settings2, Clock, ShieldCheck } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 type AssumptionStatus = 'Draft' | 'Pending Approval' | 'Approved' | 'Superseded';
 
@@ -31,6 +32,11 @@ export const AssumptionsPage: React.FC = () => {
 
   const updateStatus = (id: string, status: AssumptionStatus) => {
     setAssumptions(assumptions.map(a => a.id === id ? { ...a, status } : a));
+    const isApproved = status === 'Approved';
+    toast(isApproved ? `Assumption ${id} Officially Signed Off` : `Assumption ${id} Returned to Draft`, {
+      icon: isApproved ? <ShieldCheck className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-rose-400" />,
+      style: { borderRadius: '16px', background: '#0f172a', color: '#fff', fontSize: '12px' }
+    });
   };
 
   const pendingCount = assumptions.filter(a => a.status === 'Pending Approval').length;

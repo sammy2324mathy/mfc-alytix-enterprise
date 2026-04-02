@@ -163,8 +163,8 @@ export const LoginPage = () => {
             
             <form onSubmit={(e) => { e.preventDefault(); authenticate(); }} className="space-y-8">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold text-white tracking-tight">Secure Access</h2>
-                <p className="text-sm text-slate-400 font-medium">Enterprise Single Sign-On</p>
+                <h1 className="text-2xl font-bold text-white tracking-tight">Sovereign Login</h1>
+                <p className="text-sm text-slate-400 font-medium tracking-wide">Enterprise Intelligence Gateway</p>
               </div>
 
               <div className="space-y-4">
@@ -172,8 +172,8 @@ export const LoginPage = () => {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-sky-400 transition-colors" />
                   <input
                     type="text" required value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/50 transition-all font-medium text-sm"
-                    placeholder="Enterprise Email"
+                    className="w-full bg-slate-950/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/50 transition-all font-medium text-sm"
+                    placeholder="Identity Email"
                   />
                 </div>
 
@@ -181,53 +181,62 @@ export const LoginPage = () => {
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-sky-400 transition-colors" />
                   <input
                     type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/50 transition-all font-medium text-sm"
-                    placeholder="Password / API Key"
+                    className="w-full bg-slate-950/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/50 transition-all font-medium text-sm"
+                    placeholder="Access Key"
                   />
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <Link to="/forgot-password" className="text-xs font-bold text-slate-500 hover:text-sky-400 transition-colors">Forgot password?</Link>
-                  <Link to="/register" className="text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors">Onboard New Node</Link>
                 </div>
 
                 <button
                   type="submit" disabled={loading}
-                  className="w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-4 rounded-2xl transition-all shadow-[0_10px_20px_-5px_rgba(59,130,246,0.3)] hover:shadow-sky-500/40 flex items-center justify-center gap-2"
+                  className="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-4 rounded-2xl transition-all shadow-[0_10px_20px_-5px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2 group/btn"
                 >
-                  {loading ? (
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>Secure Login</>
-                  )}
+                  {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <>Connect to Mesh <Activity className="w-4 h-4 group-hover/btn:animate-pulse" /></>}
                 </button>
-
-                {message && (
-                  <div className="flex items-center gap-2 text-rose-400 text-xs font-bold mt-4 justify-center bg-rose-500/10 py-3 px-4 rounded-2xl border border-rose-500/20">
-                    <ShieldAlert className="w-4 h-4 shrink-0" /> {message}
-                  </div>
-                )}
               </div>
 
-              {/* Trust Indicators */}
-              <div className="pt-6 border-t border-white/5 flex items-center justify-between text-[10px] uppercase tracking-widest font-bold text-slate-500">
-                <div className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> SOC2 COMPLIANT</div>
-                <div className="flex items-center gap-1.5"><Fingerprint className="w-3.5 h-3.5" /> ENCRYPTED</div>
-                <div className="flex items-center gap-1.5"><Microscope className="w-3.5 h-3.5" /> SECURE CLOUD</div>
+              {/* Demo Roles Grid */}
+              <div className="pt-8 space-y-4">
+                <div className="flex items-center gap-3">
+                   <div className="h-px flex-1 bg-white/5"></div>
+                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Demo Intelligence Access</span>
+                   <div className="h-px flex-1 bg-white/5"></div>
+                </div>
+                
+                <div className="grid grid-cols-5 gap-3">
+                   {demoRoles.map((role) => (
+                      <button
+                        key={role.key}
+                        type="button"
+                        onClick={() => loginAs(role)}
+                        title={role.label}
+                        className="group/role relative flex flex-col items-center gap-1 p-2 rounded-xl bg-white/5 border border-white/5 hover:border-sky-500/50 hover:bg-sky-500/10 transition-all active:scale-95"
+                      >
+                         <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${role.color} flex items-center justify-center text-white shadow-lg shadow-black/20 group-hover/role:scale-110 transition-transform`}>
+                            {role.icon}
+                         </div>
+                         <span className="text-[8px] font-black uppercase text-slate-500 group-hover/role:text-sky-300 transition-colors truncate w-full text-center">{role.key.split('_')[0]}</span>
+                      </button>
+                   ))}
+                </div>
               </div>
+
+              {message && (
+                <div className="flex items-center gap-2 text-rose-400 text-[11px] font-black py-4 rounded-2xl justify-center bg-rose-500/10 border border-rose-500/20 uppercase tracking-widest">
+                  <ShieldAlert className="w-4 h-4" /> {message}
+                </div>
+              )}
             </form>
           </div>
           
-          <div className="mt-8 text-center animate-fade-in delay-700">
+          <div className="mt-8 text-center animate-fade-in">
              <a 
                href="https://www.linkedin.com/in/mathew-mabira-24861632b" 
                target="_blank" 
-               rel="noopener noreferrer"
-               className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-[10px] font-bold text-slate-400 hover:text-sky-400 group"
+               className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all text-[11px] font-black tracking-widest text-slate-400 hover:text-sky-400 group"
              >
                 <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
                 <span>PLATFORM ARCHITECT:</span>
-                <span className="text-white group-hover:text-sky-400 underline decoration-sky-500/30 underline-offset-4">MATHEW MABIRA</span>
+                <span className="text-white group-hover:text-sky-400 underline decoration-sky-500/50 underline-offset-4">MATHEW MABIRA</span>
              </a>
           </div>
         </div>
