@@ -20,6 +20,40 @@
 
 ---
 
+## 🏛️ Full Functional Catalog
+
+### 1. Integrated Actuarial Development Environment (IADE)
+*   **Edge-to-Edge Workbench**: A specialized, distraction-free environment for deep-work modeling sessions.
+*   **Multi-Language Sandbox**: Integrated support for Python and R modeling kernels with system-cluster auditing.
+*   **Kernel Telemetry**: Real-time monitoring of compute node performance (CPU/RAM) during heavy valuation runs.
+
+### 2. Strategic Intelligence & AI Copilot
+*   **Reasoning Intelligence**: An AI agent that provides descriptive and prescriptive insights during the modeling phase.
+*   **Automated Variance Detection**: Instant identification of deviations in survival integrals and mortality vectors.
+*   **Predictive Optimization**: Suggestions for parameter smoothing and capital reserve optimization.
+
+### 3. Regulatory & Compliance Hub
+*   **Solvency II Engine**: Full calculation of Solvency Capital Requirements (SCR) and Minimum Capital Requirements (MCR).
+*   **IFRS 17 Disclosure Desk**: Granular breakdown of **BEL**, **Risk Adjustment**, and **CSM** with P&L release scheduling.
+*   **Governance Sign-off**: Multi-level RBAC for Chief Actuary approval workflows on all regulatory reports.
+
+### 4. Mathematical & Experience Studies
+*   **Mortality/Lapse Analysis**: High-fidelity investigation of policyholder behavior trends using Gompertz-Makeham approximations.
+*   **Survival Modeling**: Advanced deterministic and stochastic survival probability calculation engines.
+*   **Data Explorer**: High-density matrix view for raw policy-level data scrubbing and validation.
+
+### 5. Financial & Capital Management
+*   **ALM (Asset Liability Management)**: Sophisticated matching of projected liabilities with asset cash-flow gradients.
+*   **Pricing Engine**: Real-time evaluation of policy premiums based on current yield curves and mortality bases.
+*   **Stress Testing**: Parametric shift modeling (+/- bps, mortality shocks) to evaluate balance-sheet resilience.
+
+### 6. Enterprise Infrastructure (Sovereign Shield)
+*   **Role-Based Access Control (RBAC)**: Secure, hierarchical access for Actuaries, Data Scientists, and Executives.
+*   **Universal SSoT Gateway**: A single source of truth connecting Auth, Accounting, Risk, and Forecasting services.
+*   **System Library Hashing**: Every run is cryptographically hashed for full audit reproducibility.
+
+---
+
 ## 🏗️ Technical Architecture
 
 ### Core Stack
