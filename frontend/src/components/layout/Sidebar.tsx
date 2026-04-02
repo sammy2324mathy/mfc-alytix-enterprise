@@ -18,7 +18,9 @@ import {
   Building,
   Users,
   BarChart3,
+  Beaker,
   BookOpen,
+
   Receipt,
   CreditCard,
   Landmark,
@@ -155,6 +157,7 @@ const sidebarSections: NavGroup[] = [
     section: 'ADVANCED DATA SCIENCE',
     roles: DATA_SCI,
     items: [
+      { name: 'ML Super-Lab', href: '/data-science/lab', icon: Beaker, roles: DATA_SCI },
       { 
         name: 'Data Management', 
         icon: Database, 

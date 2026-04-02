@@ -225,21 +225,21 @@ services:
       timeout: 5s
       retries: 3
 
-  excel-engine-service:
-    build:
-      context: ./backend
-      dockerfile: services/excel-engine-service/Dockerfile
-    restart: unless-stopped
-    environment:
-      SERVICE_NAME: excel-engine-service
-      PYTHONPATH: /app
-    ports:
-      - "8010:8010"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
+#  excel-engine-service:
+#    build:
+#      context: ./backend
+#      dockerfile: services/excel-engine-service/Dockerfile
+#    restart: unless-stopped
+#    environment:
+#      SERVICE_NAME: excel-engine-service
+#      PYTHONPATH: /app
+#    ports:
+#      - "8010:8010"
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+#      interval: 15s
+#      timeout: 5s
+#      retries: 3
 
   # ─────────────── API Gateway ───────────────
   api-gateway:
@@ -257,7 +257,7 @@ services:
       COMPLIANCE_SERVICE_URL: http://compliance-service:8007
       WORKSPACE_SERVICE_URL: http://workspace-service:8008
       DATA_SCIENCE_SERVICE_URL: http://data-science-service:8009
-      EXCEL_ENGINE_SERVICE_URL: http://excel-engine-service:8010
+#      EXCEL_ENGINE_SERVICE_URL: http://excel-engine-service:8010
       GATEWAY_RATE_LIMIT: 120
       GATEWAY_RATE_WINDOW: 60
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
@@ -270,7 +270,7 @@ services:
       - compliance-service
       - workspace-service
       - data-science-service
-      - excel-engine-service
+#      - excel-engine-service
     ports:
       - "8000:8000"
     healthcheck:

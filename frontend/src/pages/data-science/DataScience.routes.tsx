@@ -14,11 +14,14 @@ import { DSClaimsPage } from './DSClaimsPage';
 import { DatasetsPage } from './DatasetsPage';
 import { ExperimentsPage } from './ExperimentsPage';
 import { ModelsPage } from './ModelsPage';
+import { DataScienceLabPage } from './DataScienceLabPage';
 
 export const DataScienceRoutes = () => (
   <>
+    <Route path="lab" element={<DataScienceLabPage />} />
     <Route path="data" element={<DSDataPage />} />
     <Route path="datasets" element={<DatasetsPage />} />
+
     <Route path="experiments" element={<ExperimentsPage />} />
     <Route path="models" element={<ModelsPage />} />
     <Route path="governance" element={<DSGovernancePage />} />
@@ -30,6 +33,7 @@ export const DataScienceRoutes = () => (
     <Route path="predictions" element={<DSPredictionsPage />} />
     <Route path="customers" element={<DSCustomersPage />} />
     <Route path="claims" element={<DSClaimsPage />} />
-    <Route index element={<DSDataPage />} />
+    <Route index element={<DataScienceLabPage />} />
   </>
 );
+

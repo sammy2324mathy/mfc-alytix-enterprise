@@ -70,9 +70,13 @@ export const DataScienceLayout: React.FC = () => {
   const location = useLocation();
   const roles = useAuthStore((s) => s.user?.roles);
 
+  // Determine if we are in 'Workbench' mode (Lab or Modeler) to provide edge-to-edge workspace
+  const isWorkbench = location.pathname.includes('/lab') || location.pathname === '/data-science';
+
   return (
-    <div className="flex h-full gap-0 -m-6 md:-m-8">
-      <aside className="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-y-auto">
+    <div className="flex h-full gap-0 -m-6 md:-m-8 bg-[rgb(10,12,18)]">
+      {!isWorkbench && (
+        <aside className="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-y-auto animate-in slide-in-from-left duration-300">
         <div className="p-5 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Data Science</h2>
@@ -119,9 +123,9 @@ export const DataScienceLayout: React.FC = () => {
             </div>
           </div>
         </div>
-      </aside>
+      )}
 
-      <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50/30">
+      <div className={`flex-1 overflow-hidden flex flex-col ${isWorkbench ? 'p-0' : 'p-6 md:p-8 bg-slate-50/30'}`}>
         <Outlet />
       </div>
     </div>
