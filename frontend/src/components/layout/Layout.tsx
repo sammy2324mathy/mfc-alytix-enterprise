@@ -111,11 +111,6 @@ export const Layout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-5">
-              <div className="hidden lg:flex items-center gap-1.5 mr-4 px-3 py-1.5 bg-indigo-50/50 rounded-xl border border-indigo-100">
-                 <Zap className="w-3.5 h-3.5 text-indigo-500 fill-indigo-500" />
-                 <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest leading-none">AI Ready</span>
-              </div>
-
               <div className="relative">
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)}
@@ -149,16 +144,6 @@ export const Layout: React.FC = () => {
                   </div>
                 )}
               </div>
-              
-              <div className="hidden sm:flex items-center gap-2 mr-2 px-3 py-1.5 bg-emerald-50/50 rounded-xl border border-emerald-100 group transition-all hover:bg-emerald-100">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest leading-none">Enterprise Live</span>
-              </div>
-
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-xl border border-white/10 group shadow-premium-sm transition-all hover:bg-slate-800">
-                 <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-                 <span className="text-[9px] font-black text-white uppercase tracking-[0.2em] leading-none">Sovereign Shield</span>
-              </div>
 
               <div className="flex items-center gap-4 pl-2 border-l border-slate-100">
                 <div className="text-right hidden md:block">
@@ -174,6 +159,7 @@ export const Layout: React.FC = () => {
                 </div>
               </div>
             </div>
+
           </header>
         )}
 
